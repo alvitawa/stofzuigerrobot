@@ -1,0 +1,1 @@
+{"rustc":15502539724333142180,"features":"[]","target":10949801982538122485,"profile":4263669110742573511,"path":17440267152344106688,"deps":[["derive-new v0.5.0",16969899091476621592],["generic-array v0.9.0",1558226891603020438]],"local":[{"MtimeBased":[[1515330634,218515385],".fingerprint/parallelism-2207be9062d9f70c/dep-lib-parallelism-2207be9062d9f70c"]}],"rustflags":[]}
