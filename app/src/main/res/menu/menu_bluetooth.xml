@@ -8,13 +8,5 @@
 
     <item android:id="@+id/action_disconnect"
         android:title="@string/action_disconnect"
-        android:visible="false"
-        app:showAsAction="always" />
-
-    <item android:id="@+id/action_crlf"
-        android:title="@string/action_crlf"
-        android:checkable="true"
-        android:checked="false"
-        app:showAsAction="never" />
-
+        android:visible="false" />
 </menu>

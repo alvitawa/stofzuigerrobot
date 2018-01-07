@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Blue2Serial</string>
+    <string name="app_name">Stofzuiger Robot</string>
 
     <string name="status_disconnected">Disconnected</string>
     <string name="status_connecting">Connecting&#8230;</string>
@@ -9,8 +9,10 @@
 
     <string name="action_connect">Connect</string>
     <string name="action_disconnect">Disconnect</string>
-    <string name="action_crlf">CRLF</string>
     <string name="action_quit">Quit</string>
+
+    <string name="home">Home</string>
+    <string name="terminal">Terminal</string>
 
     <string name="no_bluetooth">Bluetooth is not available on this device.</string>
     <string name="paired_devices">Choose a paired Bluetooth device</string>
@@ -18,5 +20,32 @@
     <string name="command_hint">Enter command here...</string>
 
     <string name="terminal_message_template">%1$s > %2$s\n</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="commands">Commands: </string>
+
+    <string name="run">Run</string>
+    <string name="pause">Pause</string>
+
+    <string name="timings">Timings: </string>
+
+    <string name="add">Add</string>
+    <string name="remove">Remove</string>
+
+    <string name="auto">Enabled</string>
+
+    <string name="settings">Settings: </string>
+
+    <string name="fan_on">Fan</string>
+    <string name="check_stuck">Check for stuck</string>
+    <string name="check_kliff">Check for cliffs</string>
+    <string name="check_bumpers">Check for contact</string>
+
+    <string name="stuck_range">Stuck range:</string>
+    <string name="backwards_min">Backwards min time:</string>
+    <string name="backwards_rot_min">Backwards rotation min time:</string>
+
+    <string name="left_speed">Left speed:</string>
+    <string name="right_speed">Right speed:</string>
 
 </resources>
