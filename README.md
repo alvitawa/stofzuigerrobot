@@ -8,6 +8,12 @@ Deze repo is een bewerkte copie van https://github.com/MacroYau/Blue2Serial. De 
 
 Hieronder is de originele text van de readme voor Blue2Serial.
 
+
+
+
+
+
+
 # Blue2Serial
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Blue2Serial-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1623)
