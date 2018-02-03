@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/alfonso/AndroidStudioProjects/Blue2Serial/app/build/intermediates/res/merged/debug/menu/menu_home.xml",
+        "source": "/home/alfonso/AndroidStudioProjects/Blue2Serial/app/src/main/res/menu/menu_home.xml"
+    },
+    {
+        "merged": "/home/alfonso/AndroidStudioProjects/Blue2Serial/app/build/intermediates/res/merged/debug/menu/menu_bluetooth.xml",
+        "source": "/home/alfonso/AndroidStudioProjects/Blue2Serial/app/src/main/res/menu/menu_bluetooth.xml"
+    }
+]
