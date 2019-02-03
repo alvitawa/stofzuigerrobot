@@ -21,12 +21,6 @@
 // fan
 #define FAN 36
 
-// bumpers
-#define BUMPER_FRONT_OUT 32
-#define BUMPER_FRONT_IN 33
-#define BUMPER_BACK_OUT 34
-#define BUMPER_BACK_IN 35
-
 // sonars
 #define SONAR_1_TRIG 53
 #define SONAR_1_ECHO 52
@@ -34,12 +28,6 @@
 #define SONAR_2_ECHO 40
 #define SONAR_3_TRIG 49
 #define SONAR_3_ECHO 48
-#define SONAR_4_TRIG 47
-#define SONAR_4_ECHO 46
-
-// kliff sensors
-#define KLIFF1 42
-#define KLIFF2 44
 
 #define CFG_FAN_ON 0
 #define CFG_CHECK_STUCK 1
@@ -112,14 +100,6 @@ void setup()
   pinMode( FAN, OUTPUT );
   pinMode(LED_BUILTIN, OUTPUT);
 
-  pinMode(BUMPER_BACK_IN, INPUT_PULLUP);
-  pinMode(BUMPER_BACK_OUT, OUTPUT);
-  digitalWrite(BUMPER_BACK_OUT, LOW);
-
-  pinMode(BUMPER_FRONT_IN, INPUT_PULLUP);
-  pinMode(BUMPER_FRONT_OUT, OUTPUT);
-  digitalWrite(BUMPER_FRONT_OUT, LOW);
-
   // Links
   pinMode(SONAR_1_TRIG, OUTPUT);
   pinMode(SONAR_1_ECHO, INPUT);
@@ -129,14 +109,6 @@ void setup()
   //Rechts voor
   pinMode(SONAR_3_TRIG, OUTPUT);
   pinMode(SONAR_3_ECHO, INPUT);
-  //Rechts achter
-  pinMode(SONAR_4_TRIG, OUTPUT);
-  pinMode(SONAR_4_ECHO, INPUT);
-
-  //Links
-  pinMode(KLIFF1, INPUT);
-  //Rechts
-  pinMode(KLIFF2, INPUT);
 
   pinMode(FAN, OUTPUT);
 
@@ -257,16 +229,7 @@ void debug()
     }
   } else if(command == 'c') {
     get_command();
-    if (command == 'b') {
-      get_command();
-      if (command == 'f') {
-        hits(BUMPER_FRONT_IN);
-      } else if (command == 'b') {
-        hits(BUMPER_BACK_IN);
-      } else {
-        Serial.println("[ERROR] Invalid bumper id.");
-      }
-    } else if (command == 's') {
+    if (command == 's') {
       get_command();
       if (command == '1'){
         read_sonar(SONAR_1_TRIG, SONAR_1_ECHO);
@@ -274,19 +237,8 @@ void debug()
         read_sonar(SONAR_2_TRIG, SONAR_2_ECHO);
       } else if (command == '3'){
         read_sonar(SONAR_3_TRIG, SONAR_3_ECHO);
-      } else if (command == '4'){
-        read_sonar(SONAR_4_TRIG, SONAR_4_ECHO);
       } else {
         Serial.println("[ERROR] Invalid sonar id");
-      }
-    } else if (command == 'k') {
-      get_command();
-      if (command == '1'){
-        read_kliff(KLIFF1);
-      } else if (command == '2'){
-        read_kliff(KLIFF2);
-      } else {
-        Serial.println("[ERROR] Invalid kliff sensor id");
       }
     } else {
       Serial.println("[ERROR] Invalid sensor type");
@@ -332,7 +284,7 @@ void iterate()
         right();
       delay(1000 + random(2000));
     }
-    if (count > backwards_min && random(16) < count || hits(BUMPER_BACK_IN)) {
+    if (count > backwards_min && random(16) < count) {
       byte m = get_cfg(CFG_BACKWARDS_ROT_MIN);
       if (m > 0) 
         left();
@@ -391,7 +343,7 @@ bool obstacle()
   if(rand){
     Serial.print("[INFO] RANDOM_OBSTACLE");
   }
-  bool obs = hits(BUMPER_FRONT_IN) || kliff() || stuck() || rand;
+  bool obs = stuck() || rand;
   return obs;
 }
 
@@ -406,10 +358,9 @@ bool stuck()
   sonar_new[0] = read_sonar(SONAR_1_TRIG, SONAR_1_ECHO);
   sonar_new[1] = read_sonar(SONAR_2_TRIG, SONAR_2_ECHO);
   sonar_new[2] = read_sonar(SONAR_3_TRIG, SONAR_3_ECHO);
-  sonar_new[3] = read_sonar(SONAR_4_TRIG, SONAR_4_ECHO);
 
   int c = 0;
-  for(int i = 0; i < 4; i++) {
+  for(int i = 0; i < 3; i++) {
     if ((sonar[i] < 10 || sonar[i] > 400) && (sonar_new[i] < 10 || sonar_new[i] > 400) 
         || sonar[i] - stuck_range < sonar_new[i] && sonar[i] + stuck_range > sonar_new[i])
       c += 1;
@@ -419,51 +370,6 @@ bool stuck()
     Serial.println("[INFO] STUCK");
   }
   return c >= 3;
-}
-
-bool kliff()
-{
-  if(!if_cfg(CFG_CHECK_KLIFF))
-    return false;
-
-  bool k1 = read_kliff(KLIFF1);
-  bool k2 = read_kliff(KLIFF2);
-  return k1 || k2;
-}
-
-  // bool hits_front()
-  // {
-  //   if(!if_cfg(CFG_CHECK_BUMPERS))
-  //     return false;
-
-  //   int sensorVal = digitalRead(BUMPER_FRONT_IN);
-  //   Serial.print("Hits front: ");
-  //   Serial.println(sensorVal==LOW?"yes":"no");
-  //   return sensorVal == LOW;
-  // }
-
-bool hits(int pin)
-{
-  if(!if_cfg(CFG_CHECK_BUMPERS))
-    return false;
-
-  int v = digitalRead(pin) == LOW;
-
-  Serial.print("[SENSOR] BUMPER ");
-  Serial.print(pin);
-  Serial.print(" ");
-  Serial.println(v);
-  return v;
-}
-
-bool read_kliff(int pin)
-{
-  bool v = digitalRead(pin) == HIGH;
-  Serial.print("[SENSOR] KLIFF ");
-  Serial.print(pin);
-  Serial.print(" ");
-  Serial.println(v);
-  return v;
 }
 
 /// >= 400 -> Invalid, <= 10 -> Invalid
