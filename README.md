@@ -6,4 +6,4 @@ Deze repo is een bewerkte copie van https://github.com/MacroYau/Blue2Serial. De 
 
 /arduino/robot_ai.ino   Bevat de code voor de arduino in de stofzuigerrobot.
 
-/simulatie              Bevate de code voor de simulaties. Een binary is aanwezig in /simulatie/target/debug/simulatie3 (voor linux).
+/simulatie              Bevat de code voor de simulaties. Een binary is aanwezig in /simulatie/target/debug/simulatie3 (voor linux).
