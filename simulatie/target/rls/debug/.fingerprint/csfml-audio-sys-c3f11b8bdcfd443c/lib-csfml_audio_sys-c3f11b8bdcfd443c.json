@@ -1,1 +1,0 @@
-{"rustc":9473826263021856184,"features":"[]","target":2827244164385415966,"profile":14119667493710126711,"deps":[["csfml-system-sys v0.1.0",8332450210348376766],["libc v0.2.33",8014391546265567407],["sfml-types v0.1.0",17133860936503740672]],"local":[{"Precalculated":"0.1.0"}],"rustflags":["--error-format=json"]}
