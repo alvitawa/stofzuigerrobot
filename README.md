@@ -1,9 +1,11 @@
-# Stofzuiger Robot
+# Vacuum Robot Mark II 
 
-Deze repo is een bewerkte copie van https://github.com/MacroYau/Blue2Serial. De hoofd-map is een android-studio project die de code voor de app van de stofzuigerrobot bevat. Een apk is aanwezig in /app/build/output/apk/app-debug.apk
+Information about building the physical device can be found here: https://www.myminifactory.com/object/3d-print-101108
 
-/bestuurder.py          Is een script om vanaf de computer de robotstofzuiger te besturen door commando's in te voeren.
+/                       The main folder is an android studio project containing the code for the app. An apk is present in /app/build/output/apk/app-debug.apk
 
-/arduino/robot_ai.ino   Bevat de code voor de arduino in de stofzuigerrobot.
+/arduino/robot_ai.ino   Cointains the code intended to be run on the Arduino Nano.
 
-/simulatie              Bevat de code voor de simulaties. Een binary is aanwezig in /simulatie/target/debug/simulatie3 (voor linux).
+/bestuurder.py          This is a script that you can use to control the robot through the debug interface from a computer. The communication goes through serial. Run the script with python3 and pass in the serial port as a command line argument. This can also be done from the app, if you have attached the bluetooth module.
+
+The app was built based on [Blue2Serial](https://github.com/MacroYau/Blue2Serial).
