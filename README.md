@@ -2,7 +2,7 @@
 
 Information about building the physical device can be found here: https://www.myminifactory.com/object/3d-print-101108
 
-| dir | descr |
+| - | - |
 | :------------ | :--------- |
 |/ | The main folder is an android studio project containing the code for the app. An apk is present in /app/build/output/apk/app-debug.apk |
 |/arduino/robot_ai.ino | Cointains the code intended to be run on the Arduino Nano. |
