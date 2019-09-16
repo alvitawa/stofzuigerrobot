@@ -1,1 +1,5 @@
 theme: jekyll-theme-slate
+
+include:
+  - MANUAL.md
+  - README.md

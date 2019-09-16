@@ -1,6 +1,6 @@
 # Vacuum Robot Mark II 
 
-Information about building the physical device can be found here: https://www.myminifactory.com/object/3d-print-101108
+Information about building the physical device can be found here: [https://www.myminifactory.com/object/3d-print-101108](https://www.myminifactory.com/object/3d-print-101108)
 
 | - | - |
 | :------------ | :--------- |
