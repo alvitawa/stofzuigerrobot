@@ -85,16 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/check_stuck"/>
-        <CheckBox
-            android:id="@+id/check_kliff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/check_kliff"/>
-        <CheckBox
-            android:id="@+id/check_bumpers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/check_bumpers"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

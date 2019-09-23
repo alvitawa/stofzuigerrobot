@@ -2,6 +2,7 @@ package com.macroyau.blue2serial.demo;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,8 +23,9 @@ public class HomeActivity extends BluetoothSerialActivityBase {
 
     private static final int CFG_FAN_ON = 0;
     private static final int CFG_CHECK_STUCK = 1;
-    private static final int CFG_CHECK_KLIFF = 2;
-    private static final int CFG_CHECK_BUMPERS = 3;
+
+    // CFG Adresses 2 and 3 where originally used for kliff sensors and bumpers
+    // These features were removed on the second iteration of the vacuum robot
 
     private static final int CFG_STUCK_RANGE = 4;
     private static final int CFG_BACKWARDS_MIN = 5;
@@ -39,6 +41,8 @@ public class HomeActivity extends BluetoothSerialActivityBase {
     private static final int CFG_TIME_RUN_HRS = 13;
     private static final int CFG_TIME_RUN_MINS = 14;
 
+    // Subsequent adresses are used for the different timings
+
     private static final String TAG = "StofzuigerRobotHome";
 
     Button robotRunButton;
@@ -50,8 +54,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
 
     CheckBox fanOnCheckBox;
     CheckBox checkStuckCheckBox;
-    CheckBox checkKliffCheckBox;
-    CheckBox checkBumpersCheckBox;
 
     EditText stuckRangeEditText;
     EditText backwardsMinEditText;
@@ -127,11 +129,11 @@ public class HomeActivity extends BluetoothSerialActivityBase {
     }
 
     void setCfg(int addr, String val) {
-        exec("c" + String.valueOf(addr) + ";" + val + ";");
+        exec("c" + addr + ";" + val + ";");
     }
 
     void getCfg(int addr) {
-        exec("g" + String.valueOf(addr) + ";");
+        exec("g" + addr + ";");
     }
 
     @Override
@@ -184,8 +186,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
 
         fanOnCheckBox = (CheckBox) this.findViewById(R.id.fan_on);
         checkStuckCheckBox = (CheckBox) this.findViewById(R.id.check_stuck);
-        checkKliffCheckBox = (CheckBox) this.findViewById(R.id.check_kliff);
-        checkBumpersCheckBox = (CheckBox) this.findViewById(R.id.check_bumpers);
 
         fanOnCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -197,18 +197,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 setCfg(CFG_CHECK_STUCK, b ? 1 : 0);
-            }
-        });
-        checkKliffCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                setCfg(CFG_CHECK_KLIFF, b ? 1 : 0);
-            }
-        });
-        checkBumpersCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                setCfg(CFG_CHECK_BUMPERS, b ? 1 : 0);
             }
         });
 
@@ -275,6 +263,9 @@ public class HomeActivity extends BluetoothSerialActivityBase {
             Intent intent = new Intent(HomeActivity.this, TerminalActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.about) {
+            Intent openURL = new Intent(Intent.ACTION_VIEW, Uri.parse("https://alvitawa.github.io/stofzuigerrobot/MANUAL.html"));
+            startActivity(openURL);
         }
 
         return super.onOptionsItemSelected(item);
@@ -288,8 +279,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
         removeTimingButton.setEnabled(true);
         getCfg(CFG_FAN_ON);
         getCfg(CFG_CHECK_STUCK);
-        getCfg(CFG_CHECK_KLIFF);
-        getCfg(CFG_CHECK_BUMPERS);
         getCfg(CFG_STUCK_RANGE);
         getCfg(CFG_BACKWARDS_MIN);
         getCfg(CFG_BACKWARDS_ROT_MIN);
@@ -314,8 +303,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
         }
         fanOnCheckBox.setEnabled(false);
         checkStuckCheckBox.setEnabled(false);
-        checkKliffCheckBox.setEnabled(false);
-        checkBumpersCheckBox.setEnabled(false);
         stuckRangeEditText.setEnabled(false);
         backwardsMinEditText.setEnabled(false);
         backwardsRotMinEditText.setEnabled(false);
@@ -337,12 +324,6 @@ public class HomeActivity extends BluetoothSerialActivityBase {
             } else if (address == CFG_CHECK_STUCK) {
                 checkStuckCheckBox.setChecked(value != 0);
                 checkStuckCheckBox.setEnabled(true);
-            } else if (address == CFG_CHECK_KLIFF) {
-                checkKliffCheckBox.setChecked(value != 0);
-                checkKliffCheckBox.setEnabled(true);
-            } else if (address == CFG_CHECK_BUMPERS) {
-                checkBumpersCheckBox.setChecked(value != 0);
-                checkBumpersCheckBox.setEnabled(true);
             } else if (address == CFG_STUCK_RANGE) {
                 stuckRangeEditText.setText(parts[2].trim());
                 stuckRangeEditText.setEnabled(true);

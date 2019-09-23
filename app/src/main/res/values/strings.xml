@@ -13,6 +13,7 @@
 
     <string name="home">Home</string>
     <string name="terminal">Terminal</string>
+    <string name="about">About</string>
 
     <string name="no_bluetooth">Bluetooth is not available on this device.</string>
     <string name="paired_devices">Choose a paired Bluetooth device</string>
