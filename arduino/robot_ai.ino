@@ -104,8 +104,7 @@ unsigned long get_time(int addry) {
   return (hrs * 60 + mins) * 60 * 1000;
 }
 
-void setup()
-{
+void setup() {
   //Batty
   pinMode(battery, INPUT);
 
@@ -150,6 +149,8 @@ void setup()
   pinMode(SONAR_3_ECHO, INPUT);
 
   pinMode(FAN, OUTPUT);
+
+  pinMode(led, OUTPUT);
 
   randomSeed(analogRead(0));
 
