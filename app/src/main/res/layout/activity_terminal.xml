@@ -25,7 +25,8 @@
             android:inputType="text"
             android:background="@null"
             android:typeface="monospace"
-            android:singleLine="true">
+            android:singleLine="true"
+            android:autofillHints="">
 
             <requestFocus />
 

@@ -11,17 +11,15 @@
     <string name="action_disconnect">Disconnect</string>
     <string name="action_quit">Quit</string>
 
-    <string name="home">Home</string>
     <string name="terminal">Terminal</string>
     <string name="about">About</string>
 
     <string name="no_bluetooth">Bluetooth is not available on this device.</string>
     <string name="paired_devices">Choose a paired Bluetooth device</string>
 
-    <string name="command_hint">Enter command here...</string>
+    <string name="command_hint">Enter command here…</string>
 
     <string name="terminal_message_template">%1$s > %2$s\n</string>
-    <string name="title_activity_home">HomeActivity</string>
 
     <string name="commands">Commands: </string>
 
@@ -39,8 +37,6 @@
 
     <string name="fan_on">Fan</string>
     <string name="check_stuck">Check for stuck</string>
-    <string name="check_kliff">Check for cliffs</string>
-    <string name="check_bumpers">Check for contact</string>
 
     <string name="stuck_range">Stuck range:</string>
     <string name="backwards_min">Backwards min time:</string>
@@ -48,5 +44,8 @@
 
     <string name="left_speed">Left speed:</string>
     <string name="right_speed">Right speed:</string>
+    <string name="minutes">Minutes</string>
+    <string name="speed">A speed</string>
+    <string name="range">Range</string>
 
 </resources>

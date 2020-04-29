@@ -24,7 +24,6 @@ local.properties
 *.iml
 
 # OS-specific files
-.DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
