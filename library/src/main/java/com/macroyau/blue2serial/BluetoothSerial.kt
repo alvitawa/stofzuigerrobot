@@ -50,7 +50,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	 *
 	 * @return the paired devices
 	 */
-	var pairedDevices: Set<BluetoothDevice>? = null
+	var pairedDevices: Set<BluetoothDevice> = emptySet()
 		private set
 
 	private lateinit var mListener: BluetoothSerialListener
@@ -106,7 +106,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	@Suppress("unused")
 	val pairedDevicesName: Array<String?>
 		get() {
-			return pairedDevices?.map { it.name }?.toTypedArray() ?: arrayOf()
+			return pairedDevices.map { it.name }.toTypedArray()
 		}
 
 	/**
@@ -117,7 +117,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	@Suppress("unused")
 	val pairedDevicesAddress: Array<String?>?
 		get() {
-			return pairedDevices?.map { it.address }?.toTypedArray() ?: arrayOf()
+			return pairedDevices.map { it.address }.toTypedArray()
 		}
 
 	/**
@@ -195,27 +195,20 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	}
 
 	fun checkBluetooth(): Boolean {
-		return if (mAdapter == null) {
-			mListener.onBluetoothNotSupported()
-			false
-		} else {
+		mAdapter?.let {
 			if (!mAdapter.isEnabled) {
 				mListener.onBluetoothDisabled()
 				false
-			} else {
-				true
-			}
-		}
+			} else true
+		} ?: mListener.onBluetoothNotSupported(); return false
 	}
 
 	/**
 	 * Open a Bluetooth serial port and get ready to establish a connection with a remote device.
 	 */
-	fun start() {
-		mService?.let {
-			if (it.state == STATE_DISCONNECTED)
-				it.start()
-		}
+	fun start() = mService?.let {
+		if (it.state == STATE_DISCONNECTED)
+			it.start()
 	}
 
 	/**
@@ -239,11 +232,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	 *
 	 * @param device A remote Bluetooth device.
 	 */
-	fun connect(device: BluetoothDevice) {
-		if (mService != null) {
-			mService!!.connect(device)
-		}
-	}
+	fun connect(device: BluetoothDevice) = mService?.connect(device)
 
 	/**
 	 * Write the specified bytes to the Bluetooth serial port.
@@ -251,7 +240,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	 * @param data The data to be written.
 	 */
 	@Suppress("MemberVisibilityCanBePrivate")
-	fun write(data: ByteArray?) {
+	fun write(data: ByteArray) {
 		if (mService!!.state == STATE_CONNECTED) {
 			mService!!.write(data)
 		}
@@ -274,9 +263,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	 * @param data The data to be written.
 	 */
 	@Suppress("unused")
-	fun write(data: String) {
-		write(data.toByteArray())
-	}
+	fun write(data: String) = write(data.toByteArray())
 
 	/**
 	 * Write the specified string ended with a new line (\r\n) to the Bluetooth serial port.
@@ -292,11 +279,7 @@ class BluetoothSerial(context: Context, listener: BluetoothSerialListener) {
 	/**
 	 * Disconnect from the remote Bluetooth device and close the active Bluetooth serial port.
 	 */
-	fun stop() {
-		if (mService != null) {
-			mService!!.stop()
-		}
-	}
+	fun stop() = mService?.stop()
 
 
 }

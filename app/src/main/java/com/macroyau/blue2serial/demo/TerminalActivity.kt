@@ -11,6 +11,11 @@ import kotlinx.android.synthetic.main.activity_terminal.*
  * @author Macro Yau
  */
 class TerminalActivity : BluetoothSerialActivityBase() {
+	// Scroll the terminal screen to the bottom
+	private val scrollTerminalToBottom = Runnable {
+		terminal.fullScroll(ScrollView.FOCUS_DOWN)
+	}
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_terminal)
@@ -31,20 +36,16 @@ class TerminalActivity : BluetoothSerialActivityBase() {
 	/* Implementation of BluetoothSerialListener */
 	override fun onRecieveLine(line: String) {
 		// Print the incoming message on the terminal screen
-		tv_terminal!!.append(getString(R.string.terminal_message_template,
+		tv_terminal.append(getString(R.string.terminal_message_template,
 				bluetoothSerial!!.connectedDeviceName, line))
-		terminal!!.post(scrollTerminalToBottom)
+		terminal.post(scrollTerminalToBottom)
 	}
 
 	override fun onBluetoothSerialWrite(message: String?) {
 		// Print the outgoing message on the terminal screen
-		tv_terminal!!.append(getString(R.string.terminal_message_template,
+		tv_terminal.append(getString(R.string.terminal_message_template,
 				bluetoothSerial!!.localAdapterName,
 				message))
-		terminal!!.post(scrollTerminalToBottom)
-	}
-
-	private val scrollTerminalToBottom = Runnable { // Scroll the terminal screen to the bottom
-		terminal!!.fullScroll(ScrollView.FOCUS_DOWN)
+		terminal.post(scrollTerminalToBottom)
 	}
 }

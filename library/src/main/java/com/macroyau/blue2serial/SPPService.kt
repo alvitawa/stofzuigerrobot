@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothSocket
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import com.macroyau.blue2serial.ext.logID
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -16,50 +17,46 @@ import java.util.*
  * @author Macro Yau
  */
 class SPPService(handler: Handler) {
-	private inner class ConnectThread(device: BluetoothDevice) : Thread() {
-		private val mSocket: BluetoothSocket?
-		private val mDevice: BluetoothDevice
+	private inner class ConnectThread(val device: BluetoothDevice) : Thread() {
+		private val mSocket: BluetoothSocket
+
 		override fun run() {
 			try {
-				mSocket!!.connect()
+				mSocket.connect()
 			} catch (e: IOException) {
-				Log.e(TAG, "Failed to connect to the socket!")
+				Log.e(logID(), "Failed to connect to the socket!")
 				cancel()
 				reconnect() // Connection failed
 				return
 			}
 			synchronized(this@SPPService) { mConnectThread = null }
-			connected(mSocket, mDevice)
+			connected(mSocket, device)
 		}
 
-		fun cancel() {
-			try {
-				mSocket!!.close()
-			} catch (e: IOException) {
-				Log.e(TAG, "Unable to close the socket!")
-			}
+		fun cancel() = try {
+			mSocket.close()
+		} catch (e: IOException) {
+			Log.e(logID(), "Unable to close the socket!", e)
 		}
 
 		init {
-			Log.d(TAG, "ConnectThread($device)")
-			mDevice = device
+			Log.d(logID(), "ConnectThread($device)")
 			var tempSocket: BluetoothSocket? = null
 			try {
 				tempSocket = device.createRfcommSocketToServiceRecord(UUID_SPP)
 			} catch (e1: IOException) {
-				Log.e(TAG, "Failed to create a secure socket!")
+				Log.e(logID(), "Failed to create a secure socket!", e1)
 				try {
 					tempSocket = device.createInsecureRfcommSocketToServiceRecord(UUID_SPP)
 				} catch (e2: IOException) {
-					Log.e(TAG, "Failed to create an insecure socket!")
+					Log.e(logID(), "Failed to create an insecure socket!", e2)
 				}
 			}
-			mSocket = tempSocket
+			mSocket = tempSocket!!
 		}
 	}
 
-	private inner class ConnectedThread(socket: BluetoothSocket?) : Thread() {
-		private val mSocket: BluetoothSocket?
+	private inner class ConnectedThread(val socket: BluetoothSocket) : Thread() {
 		private val mInputStream: InputStream?
 		private val mOutputStream: OutputStream?
 		override fun run() {
@@ -84,7 +81,7 @@ class SPPService(handler: Handler) {
 			}
 		}
 
-		fun write(data: ByteArray?) {
+		fun write(data: ByteArray) {
 			try {
 				mOutputStream!!.write(data)
 				mHandler.obtainMessage(
@@ -94,28 +91,28 @@ class SPPService(handler: Handler) {
 						data
 				).sendToTarget()
 			} catch (e: IOException) {
-				Log.e(TAG, "Unable to write the socket!")
+				Log.e(logID(), "Unable to write the socket!")
 			}
 		}
 
-		fun cancel() {
-			try {
-				mSocket!!.close()
-			} catch (e: IOException) {
-				Log.e(TAG, "Unable to close the socket!")
-			}
+		@Suppress("unused")
+		fun cancel() = try {
+			socket.close()
+		} catch (e: IOException) {
+			Log.e(logID(), "Unable to close the socket!")
 		}
 
 		init {
-			Log.d(TAG, "ConnectedThread()")
-			mSocket = socket
+			Log.d(logID(), "ConnectedThread()")
 			var tempInputStream: InputStream? = null
 			var tempOutputStream: OutputStream? = null
 			try {
-				tempInputStream = socket!!.inputStream
-				tempOutputStream = socket.outputStream
+				socket.let {
+					tempInputStream = it.inputStream
+					tempOutputStream = it.outputStream
+				}
 			} catch (e: IOException) {
-				Log.e(TAG, "I/O streams cannot be created from the socket!")
+				Log.e(logID(), "I/O streams cannot be created from the socket!", e)
 			}
 			mInputStream = tempInputStream
 			mOutputStream = tempOutputStream
@@ -123,7 +120,6 @@ class SPPService(handler: Handler) {
 	}
 
 	companion object {
-		private const val TAG = "SPPService"
 		private val UUID_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 	}
 
@@ -137,7 +133,7 @@ class SPPService(handler: Handler) {
 	var state: Int
 		get() = mState
 		private set(state) {
-			Log.d(TAG, "setState() $mState -> $state")
+			Log.d(logID(), "setState() $mState -> $state")
 			mState = state
 			mHandler.obtainMessage(
 					BluetoothSerial.MESSAGE_STATE_CHANGE,
@@ -153,28 +149,24 @@ class SPPService(handler: Handler) {
 
 	@Synchronized
 	fun start() {
-		Log.d(TAG, "start()")
+		Log.d(logID(), "start()")
 		resetThreads()
 		state = BluetoothSerial.STATE_DISCONNECTED
 	}
 
 	@Synchronized
 	fun connect(device: BluetoothDevice) {
-		Log.d(TAG, "connect($device)")
-		if (mState == BluetoothSerial.STATE_CONNECTING) {
-			resetConnectThread()
-		}
-		if (mState == BluetoothSerial.STATE_CONNECTED) {
-			resetConnectedThread()
-		}
+		Log.d(logID(), "connect($device)")
+		if (mState == BluetoothSerial.STATE_CONNECTING) resetConnectThread()
+		if (mState == BluetoothSerial.STATE_CONNECTED) resetConnectedThread()
 		mConnectThread = ConnectThread(device)
 		mConnectThread!!.start()
 		state = BluetoothSerial.STATE_CONNECTING
 	}
 
 	@Synchronized
-	fun connected(socket: BluetoothSocket?, device: BluetoothDevice) {
-		Log.d(TAG, "Connected to $device!")
+	fun connected(socket: BluetoothSocket, device: BluetoothDevice) {
+		Log.d(logID(), "Connected to $device!")
 		resetThreads()
 		mConnectedThread = ConnectedThread(socket)
 		mConnectedThread!!.start()
@@ -189,12 +181,12 @@ class SPPService(handler: Handler) {
 
 	@Synchronized
 	fun stop() {
-		Log.d(TAG, "stop()")
+		Log.d(logID(), "stop()")
 		resetThreads()
 		state = BluetoothSerial.STATE_DISCONNECTED
 	}
 
-	fun write(data: ByteArray?) {
+	fun write(data: ByteArray) {
 		var t: ConnectedThread?
 		synchronized(this) {
 			t = if (mState == BluetoothSerial.STATE_CONNECTED)
@@ -212,21 +204,15 @@ class SPPService(handler: Handler) {
 
 	@Synchronized
 	private fun resetConnectThread() {
-		if (mConnectThread != null) {
-			mConnectThread!!.cancel()
-			mConnectThread = null
-		}
+		mConnectThread?.cancel()
+		mConnectThread = null
 	}
 
 	@Synchronized
 	private fun resetConnectedThread() {
-		if (mConnectedThread != null) {
-			mConnectedThread!!.cancel()
-			mConnectedThread = null
-		}
+		mConnectedThread?.cancel()
+		mConnectedThread = null
 	}
 
-	private fun reconnect() {
-		start()
-	}
+	private fun reconnect() = start()
 }

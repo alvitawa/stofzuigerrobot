@@ -2,7 +2,6 @@ package com.macroyau.blue2serial.demo
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -10,21 +9,24 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.macroyau.blue2serial.BluetoothDeviceListDialog
-import com.macroyau.blue2serial.BluetoothDeviceListDialog.OnDeviceSelectedListener
 import com.macroyau.blue2serial.BluetoothSerial
 import com.macroyau.blue2serial.BluetoothSerialListener
 
 abstract class BluetoothSerialActivityBase
-	: AppCompatActivity(), BluetoothSerialListener, OnDeviceSelectedListener {
+	: AppCompatActivity(), BluetoothSerialListener {
 	companion object {
 		const val REQUEST_ENABLE_BLUETOOTH = 1
 	}
+
 	@Suppress("MemberVisibilityCanBePrivate")
 	var msgBuffer: String? = ""
+
 	@Suppress("MemberVisibilityCanBePrivate")
 	var bluetoothSerial: BluetoothSerial? = null
+
 	@Suppress("MemberVisibilityCanBePrivate")
 	var actionConnect: MenuItem? = null
+
 	@Suppress("MemberVisibilityCanBePrivate")
 	var actionDisconnect: MenuItem? = null
 
@@ -82,15 +84,10 @@ abstract class BluetoothSerialActivityBase
 	}
 
 	override fun invalidateOptionsMenu() {
-		if (bluetoothSerial == null) return
-
 		// Show or hide the "Connect" and "Disconnect" buttons on the app bar
-		if (bluetoothSerial!!.isConnected) {
-			if (actionConnect != null) actionConnect!!.isVisible = false
-			if (actionDisconnect != null) actionDisconnect!!.isVisible = true
-		} else {
-			if (actionConnect != null) actionConnect!!.isVisible = true
-			if (actionDisconnect != null) actionDisconnect!!.isVisible = false
+		bluetoothSerial?.let { bS ->
+			actionConnect?.let { it.isVisible = !bS.isConnected }
+			actionDisconnect?.let { it.isVisible = bS.isConnected }
 		}
 	}
 
@@ -109,7 +106,7 @@ abstract class BluetoothSerialActivityBase
 	override fun onBluetoothNotSupported() {
 		AlertDialog.Builder(this)
 				.setMessage(R.string.no_bluetooth)
-				.setPositiveButton(R.string.action_quit) { dialog, which -> finish() }
+				.setPositiveButton(R.string.action_quit) { _, _ -> finish() }
 				.setCancelable(false)
 				.show()
 	}
@@ -124,20 +121,13 @@ abstract class BluetoothSerialActivityBase
 		updateBluetoothState()
 	}
 
-	override fun onConnectingBluetoothDevice() {
-		updateBluetoothState()
-	}
+	override fun onConnectingBluetoothDevice() = updateBluetoothState()
 
 	override fun onBluetoothDeviceConnected(name: String?, address: String?) {
 		invalidateOptionsMenu()
 		updateBluetoothState()
 	}
 
-	/* Implementation of BluetoothDeviceListDialog.OnDeviceSelectedListener */
-	override fun onBluetoothDeviceSelected(device: BluetoothDevice?) {
-		// Connect to the selected remote Bluetooth device
-		bluetoothSerial!!.connect(device!!)
-	}
 
 	override fun onBluetoothSerialRead(message: String?) {
 		msgBuffer += message
@@ -161,16 +151,12 @@ abstract class BluetoothSerialActivityBase
 	open fun whenConnected() {}
 	open fun whenDisconnected() {}
 
-	fun exec(command: String?) {
-		bluetoothSerial!!.write(command!!, false)
-	}
+	fun exec(command: String?) = bluetoothSerial!!.write(command!!, false)
 
 	@Suppress("MemberVisibilityCanBePrivate")
 	fun updateBluetoothState() {
 		// Get the current Bluetooth state
-		val state: Int = if (bluetoothSerial != null)
-			bluetoothSerial!!.state
-		else BluetoothSerial.STATE_DISCONNECTED
+		val state: Int = bluetoothSerial?.state ?: BluetoothSerial.STATE_DISCONNECTED
 
 		// Display the current state on the app bar as the subtitle
 		val subtitle: String
@@ -185,19 +171,17 @@ abstract class BluetoothSerialActivityBase
 				subtitle = getString(R.string.status_disconnected)
 			}
 		}
-		if (supportActionBar != null) {
-			supportActionBar!!.subtitle = subtitle
-		}
+		supportActionBar?.subtitle = subtitle
 	}
 
+	// Display dialog for selecting a remote Bluetooth device
 	@Suppress("MemberVisibilityCanBePrivate")
-	fun showDeviceListDialog() {
-		// Display dialog for selecting a remote Bluetooth device
-		val dialog = BluetoothDeviceListDialog(this)
-		dialog.onDeviceSelectedListener = this
-		dialog.setTitle(R.string.paired_devices)
-		dialog.mDevices = bluetoothSerial!!.pairedDevices
-		dialog.mShowAddress = true
-		dialog.show()
-	}
+	fun showDeviceListDialog() =
+			BluetoothDeviceListDialog(this)
+					// Connect to the selected remote Bluetooth device
+					.setOnDeviceSelectedListener { bluetoothSerial!!.connect(it!!) }
+					.setTitle(R.string.paired_devices)
+					.setDevices(bluetoothSerial!!.pairedDevices)
+					.setShowAddress(true)
+					.show()
 }
